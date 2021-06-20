@@ -1,23 +1,33 @@
-const http = require('http');
-const url = require('url');
-const { parse } = require('querystring');
+const mysql = require('mysql');
 
-http.createServer(((req, res) => {
-    if(req.method === 'GET') {
-        console.log('Method type: ' + req.method);
-        console.log(url.parse(req.url, true).query.test);
-        res.end('GET REQ ENDS')
-    } else if(req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        })
-        req.on('end', () => {
-            let params = parse(body);
-            if(params.age < 18) console.log('minor');
-            else console.log('adult');
-            console.log(params);
-            res.end('ok');
-        })
+const conn = mysql.createConnection({
+    host: "127.0.0.1",
+    user: "root",
+    database: "copy_garbage",
+    password: "11qqaa"
+});
+
+conn.connect((err) => {
+    if(err){
+        console.log(err);
+        return err;
+    } else {
+        console.log('DB connected');
     }
-})).listen(3000)
+});
+
+let query = "SELECT * FROM users";
+
+conn.query(query,(err, res) => {
+    if(err) console.log(err)
+    console.log(res);
+})
+
+conn.end((err) => {
+    if(err){
+        console.log(err);
+        return err;
+    } else {
+        console.log('DB disconnected');
+    }
+});
