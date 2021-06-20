@@ -1,50 +1,23 @@
-const fs = require('fs');
-const path = require('path');
-const user = require('./files/csv&jsonFiles/user.json');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const http = require('http');
+const url = require('url');
+const { parse } = require('querystring');
 
-// write json file
-const people = {
-    sex: 'male',
-    age: 21,
-    name: 'John',
-    company: 'Google'
-}
-
-fs.writeFile('files/csv&jsonFiles/user.json', JSON.stringify(people), (err) => {
-    if(err) console.log(err);
-})
-
-// read json file
-console.log(user);
-
-// write CSV file
-const csvWriter = createCsvWriter({
-    path: 'files/csv&jsonFiles/userWrite.csv',
-    header: [
-        {id: 'name', title: 'NAME'},
-        {id: 'lang', title: 'LANGUAGE'},
-        {id: 'sex', title: 'SEX'},
-        {id: 'age', title: 'AGE'}
-    ]
-});
-
-const records = [
-    {
-        name: 'Bob',
-        lang: 'French, English',
-        sex: 'male',
-        age: 20
-    },
-    {
-        name: 'Mary',
-        lang: 'English',
-        sex: 'female',
-        age: 18
+http.createServer(((req, res) => {
+    if(req.method === 'GET') {
+        console.log('Method type: ' + req.method);
+        console.log(url.parse(req.url, true).query.test);
+        res.end('GET REQ ENDS')
+    } else if(req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        })
+        req.on('end', () => {
+            let params = parse(body);
+            if(params.age < 18) console.log('minor');
+            else console.log('adult');
+            console.log(params);
+            res.end('ok');
+        })
     }
-];
-
-csvWriter.writeRecords(records)
-    .then(() => {
-        console.log('...Done');
-    });
+})).listen(3000)

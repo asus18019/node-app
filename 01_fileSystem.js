@@ -1,3 +1,7 @@
+// 01
+const fs = require('fs');
+const path = require('path');
+
 const fsFunc = () => {
     // read file async way
     fs.readFile('text1.txt', 'UTF-8', (err, data) => {
