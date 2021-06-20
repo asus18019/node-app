@@ -1,24 +1,50 @@
 const fs = require('fs');
 const path = require('path');
+const user = require('./files/csv&jsonFiles/user.json');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-// read file async way
-fs.readFile('text1.txt', 'UTF-8', (err, data) => {
-    console.log(data);
+// write json file
+const people = {
+    sex: 'male',
+    age: 21,
+    name: 'John',
+    company: 'Google'
+}
+
+fs.writeFile('files/csv&jsonFiles/user.json', JSON.stringify(people), (err) => {
+    if(err) console.log(err);
 })
 
-// read file sync way
-let text = fs.readFileSync('text2.txt', 'UTF-8');
-console.log(text);
+// read json file
+console.log(user);
 
-// read dir
-fs.readdir('files', (err, data) => {
-    console.log(data);
-    data.forEach(file => {
-        console.log('extension of ' + file + ' is ' + path.extname(file) + '. Size: ' + fs.statSync('files/' + file).size + 'B');
-    })
-})
+// write CSV file
+const csvWriter = createCsvWriter({
+    path: 'files/csv&jsonFiles/userWrite.csv',
+    header: [
+        {id: 'name', title: 'NAME'},
+        {id: 'lang', title: 'LANGUAGE'},
+        {id: 'sex', title: 'SEX'},
+        {id: 'age', title: 'AGE'}
+    ]
+});
 
-// write file Sync 
-fs.writeFileSync('files/newFile.txt', 'SOME TEXT SOME TEXT SOME TEXT', (err) => {
-    console.log(err)
-})
+const records = [
+    {
+        name: 'Bob',
+        lang: 'French, English',
+        sex: 'male',
+        age: 20
+    },
+    {
+        name: 'Mary',
+        lang: 'English',
+        sex: 'female',
+        age: 18
+    }
+];
+
+csvWriter.writeRecords(records)
+    .then(() => {
+        console.log('...Done');
+    });
